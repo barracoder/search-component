@@ -1,0 +1,11 @@
+{
+  "name": "ui-components",
+  "version": "1.0.0",
+  "description": "A library of React UI compnents",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "barracoder@github.com",
+  "license": "MIT"
+}
