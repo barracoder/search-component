@@ -1,6 +1,6 @@
 import React from 'react';
 import { SearchBox } from '@fluentui/react';
-import ResultsPopup from './ResultsPopup';
+import ResultsPopup from '../ui-components/src/components/SearchComponent/ResultsPopup';
 
 interface SearchComponentProps {
   onSearch: (query: string) => void;
