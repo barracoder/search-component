@@ -1,16 +1,15 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, SyntheticEvent } from "react";
 import {
-  Button,
   SearchBox as FluentSearchBox,
+  InputOnChangeData,
   Menu,
   MenuItem,
   MenuList,
   MenuPopover,
-  Popover,
-  PopoverSurface,
+  MenuProps,
   PositioningImperativeRef,
+  SearchBoxChangeEvent,
   Spinner,
-  useId,
   useRestoreFocusTarget,
 } from "@fluentui/react-components";
 
@@ -35,37 +34,46 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   const [open, setOpen] = useState(false);
   const searchBoxRef = React.useRef<HTMLInputElement>(null);
   const positioningRef = React.useRef<PositioningImperativeRef>(null);
+  const onOpenChange: MenuProps["onOpenChange"] = (e, data) => {
+    // do not close menu as an outside click if clicking on the custom trigger/target
+    // this prevents it from closing & immediately re-opening when clicking custom triggers
+    if (
+      data.type === "clickOutside" && e.target === searchBoxRef.current
+    ) {
+      return;
+    }
+
+    setOpen(data.open);
+  };
 
   React.useEffect(() => {
+    console.log("Setting target");
     if (searchBoxRef.current) {
+      console.log("Setting target");
       positioningRef.current?.setTarget(searchBoxRef.current);
     }
   }, [searchBoxRef, positioningRef]);
 
   const restoreFocusTargetAttribute = useRestoreFocusTarget();
 
-  const handleSearch = async (newValue: string) => {
-    try {
-      console.log(newValue);
-      setQuery(newValue);
-      setLoading(true);
-      setOpen(true);
-      onSearch(newValue);
-    } catch (error) {
-      console.error("Search error:", error);
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
+  const handleSearch = (event: SearchBoxChangeEvent, data: InputOnChangeData) => {
+    setQuery(data.value);
   };
 
-  const handleSelectItem = useCallback(
-    (item: any) => {
-      onSelectItem(item);
-      setQuery("");
-    },
-    [onSelectItem]
-  );
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Enter') {
+      if (query.trim()) {
+        onSearch(query);
+        setOpen(true);
+      } else {
+        setOpen(false);
+      }
+    }
+  }, [onSearch, query]);
+
+  function handleMenuSelect(event: SyntheticEvent<HTMLDivElement, Event>): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <>
@@ -73,17 +81,18 @@ const SearchBox: React.FC<SearchBoxProps> = ({
         {...restoreFocusTargetAttribute}
         placeholder={placeholder}
         value={query}
-        onChange={(_, newValue) => handleSearch(newValue.value || "")}
+        onChange={handleSearch}
+        onKeyDown={handleKeyDown}
         disabled={loading}
         contentAfter={loading ? <Spinner /> : undefined}
         ref={searchBoxRef}
       />
-      <Menu open={open} positioning={{ positioningRef }}>
+      <Menu open={open} onOpenChange={onOpenChange} positioning={{  positioningRef }}>
         <MenuPopover>
-          <MenuList>
+          <MenuList onSelect={handleMenuSelect }>
             <MenuItem>New </MenuItem>
             <MenuItem>New Window</MenuItem>
-            <MenuItem disabled>Open File</MenuItem>
+            <MenuItem>Open File This is a very long name Stlartibartfast</MenuItem>
             <MenuItem>Open Folder</MenuItem>
           </MenuList>
         </MenuPopover>
