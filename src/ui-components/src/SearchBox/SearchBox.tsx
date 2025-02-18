@@ -1,4 +1,10 @@
-import React, { useState, useCallback, SyntheticEvent } from "react";
+import React, {
+  useState,
+  useCallback,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+} from "react";
 import {
   SearchBox as FluentSearchBox,
   InputOnChangeData,
@@ -13,20 +19,23 @@ import {
   useRestoreFocusTarget,
 } from "@fluentui/react-components";
 
-interface SearchBoxProps {
-  onSearch: (query: string) => void;
+interface SearchBoxProps<TResultType> {
+  onSearch: (query: string, onComplete: () => void) => void;
   onSelectItem: (item: any) => void; // New prop for handling selection
   isLoading: boolean;
-  results: any[] | null;
-  renderResults?: (results: any[]) => React.ReactNode; // Optional, for custom rendering
+  results: SearchBoxResult<TResultType>[] | null;
   placeholder?: string;
 }
 
-const SearchBox: React.FC<SearchBoxProps> = ({
+interface SearchBoxResult<TItem> {
+  value: TItem;
+  displayText: string;
+}
+
+const SearchBox: React.FC<SearchBoxProps<any>> = ({
   onSearch,
   onSelectItem,
   results,
-  renderResults,
   placeholder = "Search...",
 }) => {
   const [query, setQuery] = useState("");
@@ -34,12 +43,12 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   const [open, setOpen] = useState(false);
   const searchBoxRef = React.useRef<HTMLInputElement>(null);
   const positioningRef = React.useRef<PositioningImperativeRef>(null);
+  const firstMenuItemRef = useRef<HTMLDivElement>(null);
   const onOpenChange: MenuProps["onOpenChange"] = (e, data) => {
     // do not close menu as an outside click if clicking on the custom trigger/target
     // this prevents it from closing & immediately re-opening when clicking custom triggers
-    if (
-      data.type === "clickOutside" && e.target === searchBoxRef.current
-    ) {
+    // as per 
+    if (data.type === "clickOutside" && e.target === searchBoxRef.current) {
       return;
     }
 
@@ -56,24 +65,40 @@ const SearchBox: React.FC<SearchBoxProps> = ({
 
   const restoreFocusTargetAttribute = useRestoreFocusTarget();
 
-  const handleSearch = (event: SearchBoxChangeEvent, data: InputOnChangeData) => {
+  const handleSearch = (
+    event: SearchBoxChangeEvent,
+    data: InputOnChangeData
+  ) => {
     setQuery(data.value);
   };
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key === 'Enter') {
-      if (query.trim()) {
-        onSearch(query);
-        setOpen(true);
-      } else {
-        setOpen(false);
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
+      if (event.key === "Enter") {
+        if (query.trim()) {
+          setLoading(true);
+          onSearch(query, () => {
+            setLoading(false);
+            setOpen(true);
+          });
+        } else {
+          setOpen(false);
+        }
       }
-    }
-  }, [onSearch, query]);
+    },
+    [onSearch, query]
+  );
 
-  function handleMenuSelect(event: SyntheticEvent<HTMLDivElement, Event>): void {
-    throw new Error("Function not implemented.");
-  }
+  const handleSelectItem = (item: SearchBoxResult<any>) => {
+    onSelectItem(item.value);
+    setQuery(item.displayText);
+  };
+
+  useEffect(() => {
+    if (open && firstMenuItemRef.current) {
+      firstMenuItemRef.current.focus();
+    }
+  }, [open]);
 
   return (
     <>
@@ -83,17 +108,30 @@ const SearchBox: React.FC<SearchBoxProps> = ({
         value={query}
         onChange={handleSearch}
         onKeyDown={handleKeyDown}
-        disabled={loading}
-        contentAfter={loading ? <Spinner /> : undefined}
+        contentBefore={loading ? <Spinner size="tiny" /> : undefined}
         ref={searchBoxRef}
+        disabled={loading}
       />
-      <Menu open={open} onOpenChange={onOpenChange} positioning={{  positioningRef }}>
+      <Menu
+        open={open}
+        onOpenChange={onOpenChange}
+        positioning={{ positioningRef }}
+      >
         <MenuPopover>
-          <MenuList onSelect={handleMenuSelect }>
-            <MenuItem>New </MenuItem>
-            <MenuItem>New Window</MenuItem>
-            <MenuItem>Open File This is a very long name Stlartibartfast</MenuItem>
-            <MenuItem>Open Folder</MenuItem>
+          <MenuList>
+            {results && results.length > 0 ? (
+              results.map((result, index) => (
+                <MenuItem
+                  key={index}
+                  onClick={() => handleSelectItem(result)}
+                  ref={index === 0 ? firstMenuItemRef : null}
+                >
+                  {result.displayText}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>No results found</MenuItem>
+            )}
           </MenuList>
         </MenuPopover>
       </Menu>
@@ -102,4 +140,4 @@ const SearchBox: React.FC<SearchBoxProps> = ({
 };
 
 export default SearchBox;
-export { SearchBoxProps, SearchBox };
+export { SearchBoxProps, SearchBox, SearchBoxResult };

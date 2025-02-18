@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { SearchBox, SearchBoxProps } from './SearchBox'; // Adjust this path to where your SearchBox component is located
+import { SearchBox, SearchBoxProps, SearchBoxResult } from './SearchBox'; // Adjust this path to where your SearchBox component is located
 
 export default {
   title: 'Components/SearchBox',
@@ -10,17 +10,34 @@ export default {
   },
 } as Meta<typeof SearchBox>;
 
+export interface Company{
+  name: string;
+  assetCode: string;
+}
+
+const companies: Company[] = [
+  { name: 'Microsoft', assetCode: 'MSFT' },
+  { name: 'Apple', assetCode: 'AAPL' },
+  { name: 'Amazon', assetCode: 'AMZN' },
+  { name: 'Google', assetCode: 'GOOGL' },
+  { name: 'Facebook', assetCode: 'FB' },
+];
+
 const Template: StoryFn<typeof SearchBox> = (args) => { 
-  const [searchResults, setSearchResults] = React.useState<string[]>([]);
+  const [searchResults, setSearchResults] = React.useState<SearchBoxResult<Company>[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = async (query: string, onComplete: () => void) => {
     setIsLoading(true);
     try {
       // Simulate an API call
-      const results = await new Promise<string[]>((resolve) => {
+      const results = await new Promise<SearchBoxResult<Company>[]>((resolve) => {
         setTimeout(() => {
-          resolve([`Result for ${query} 1`, `Result for ${query} 2`, `Result for ${query} 3`]);
+          resolve(companies
+            .map((company) => ({
+              value: company,
+              displayText: company.name,
+            })));
         }, 1000);
       });
       setSearchResults(results);
@@ -29,24 +46,17 @@ const Template: StoryFn<typeof SearchBox> = (args) => {
       setSearchResults([]);
     } finally {
       setIsLoading(false);
+      onComplete();
     }
   };
-
-  const renderResults = (results: string[]) => (
-    <ul>
-      {results.map((result, index) => (
-        <li key={index}>{result}</li>
-      ))}
-    </ul>
-  );
 
   return (
     <SearchBox 
       {...args} 
       onSearch={handleSearch} 
+      onSelectItem={(item) => console.log('Selected item:', item)}
       isLoading={isLoading} 
       results={searchResults} 
-      renderResults={renderResults}
     />
   );
 };
@@ -67,4 +77,3 @@ WithPreloadedResults.parameters = {
     },
   },
 };
-// Here, we remove the decorator because 'args' isn't needed within a decorator function for this story
