@@ -104,9 +104,9 @@ const Template: StoryFn<typeof SearchBox> = (args) => {
       />
       {selectedCompany && (
           <CardHeader
-            header={<Body1>{selectedCompany.assetCode}</Body1>}
-            description={<Caption1>{selectedCompany.name}</Caption1>}
-          />
+          header={<Body1>{selectedCompany.assetCode}</Body1>}
+          description={<Caption1>{selectedCompany.name}</Caption1>}
+        />
       )}
     </>
   );
@@ -114,7 +114,7 @@ const Template: StoryFn<typeof SearchBox> = (args) => {
 
 export const Basic = Template.bind({});
 Basic.args = {
-  placeholder: "Search for something...",
+  placeholder: "Search for a company...",
 };
 
 export const WithPreloadedResults = Template.bind({});
