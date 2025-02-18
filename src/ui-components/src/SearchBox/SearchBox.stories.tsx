@@ -1,7 +1,7 @@
 import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
-import { SearchBox, SearchBoxProps, SearchBoxResult } from "./SearchBox"; // Adjust this path to where your SearchBox component is located
-import { Card, CardHeader, Body1, Body2, Caption1 } from "@fluentui/react-components";
+import { SearchBox, SearchBoxResult } from "./SearchBox"; // Adjust this path to where your SearchBox component is located
+import { CardHeader, Body1, Caption1 } from "@fluentui/react-components";
 
 export default {
   title: "Components/SearchBox",
@@ -22,6 +22,37 @@ const companies: Company[] = [
   { name: "Amazon Product Service (Europe) plc", assetCode: "AMZN" },
   { name: "Google", assetCode: "GOOGL" },
   { name: "Facebook", assetCode: "FB" },
+  { name: "Twitter", assetCode: "TWTR" },
+  { name: "Netflix", assetCode: "NFLX" },
+  { name: "Tesla", assetCode: "TSLA" },
+  { name: "Alphabet", assetCode: "GOOG" },
+  { name: "Shopify", assetCode: "SHOP" },
+  { name: "PayPal", assetCode: "PYPL" },
+  { name: "Zoom Video Communications", assetCode: "ZM" },
+  { name: "Spotify", assetCode: "SPOT" },
+  { name: "Snap", assetCode: "SNAP" },
+  { name: "Pinterest", assetCode: "PINS" },
+  { name: "Microsoft", assetCode: "MSFT" },
+  { name: "Apple", assetCode: "AAPL" },
+  { name: "Amazon Product Service (Europe) plc", assetCode: "AMZN" },
+  { name: "Google", assetCode: "GOOGL" },
+  { name: "Facebook", assetCode: "FB" },
+  { name: "Twitter", assetCode: "TWTR" },
+  { name: "Netflix", assetCode: "NFLX" },
+  { name: "Tesla", assetCode: "TSLA" },
+  { name: "Alphabet", assetCode: "GOOG" },
+  { name: "Shopify", assetCode: "SHOP" },
+  { name: "PayPal", assetCode: "PYPL" },
+  { name: "Zoom Video Communications", assetCode: "ZM" },
+  { name: "Spotify", assetCode: "SPOT" },
+  { name: "Snap", assetCode: "SNAP" },
+  { name: "Pinterest", assetCode: "PINS" },
+  { name: "Microsoft", assetCode: "MSFT" },
+  { name: "Apple", assetCode: "AAPL" },
+  { name: "Amazon Product Service (Europe) plc", assetCode: "AMZN" },
+  { name: "Google", assetCode: "GOOGL" },
+  { name: "Facebook", assetCode: "FB" },
+  { name: "Twitter", assetCode: "TWTR" }
 ];
 
 const Template: StoryFn<typeof SearchBox> = (args) => {
@@ -69,7 +100,6 @@ const Template: StoryFn<typeof SearchBox> = (args) => {
         {...args}
         onSearch={handleSearch}
         onSelectItem={handleSelectedItem}
-        isLoading={isLoading}
         results={searchResults}
       />
       {selectedCompany && (

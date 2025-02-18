@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useCallback,
-  SyntheticEvent,
-  useEffect,
-  useRef,
-} from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   SearchBox as FluentSearchBox,
   InputOnChangeData,
@@ -21,8 +15,7 @@ import {
 
 interface SearchBoxProps<TResultType> {
   onSearch: (query: string, onComplete: () => void) => void;
-  onSelectItem: (item: TResultType) => void; 
-  isLoading: boolean;
+  onSelectItem: (item: TResultType) => void;
   results: SearchBoxResult<TResultType>[] | null;
   placeholder?: string;
 }
@@ -35,10 +28,9 @@ interface SearchBoxResult<TItem> {
 const SearchBox = <TResultType,>({
   onSearch,
   onSelectItem,
-  isLoading,
   results,
-  placeholder = 'Search...',
-}: SearchBoxProps<TResultType>)  => {
+  placeholder = "Search...",
+}: SearchBoxProps<TResultType>) => {
   // contains the current search query
   const [query, setQuery] = useState("");
   // contains the current loading state
@@ -51,11 +43,11 @@ const SearchBox = <TResultType,>({
   const positioningRef = React.useRef<PositioningImperativeRef>(null);
   // ref to the first menu item
   const firstMenuItemRef = useRef<HTMLDivElement>(null);
-  /* 
-    * do not close menu as an outside click if clicking on the custom trigger/target
-    * this prevents it from closing & immediately re-opening when clicking custom triggers
-    * as per https://react.fluentui.dev/iframe.html?viewMode=docs&id=components-menu-menu--docs#anchor-to-custom-target
-  */
+  /*
+   * do not close menu as an outside click if clicking on the custom trigger/target
+   * this prevents it from closing & immediately re-opening when clicking custom triggers
+   * as per https://react.fluentui.dev/iframe.html?viewMode=docs&id=components-menu-menu--docs#anchor-to-custom-target
+   */
   const onOpenChange: MenuProps["onOpenChange"] = (e, data) => {
     setOpen(data.open);
   };
