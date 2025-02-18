@@ -21,7 +21,7 @@ import {
 
 interface SearchBoxProps<TResultType> {
   onSearch: (query: string, onComplete: () => void) => void;
-  onSelectItem: (item: any) => void; // New prop for handling selection
+  onSelectItem: (item: TResultType) => void; 
   isLoading: boolean;
   results: SearchBoxResult<TResultType>[] | null;
   placeholder?: string;
@@ -32,33 +32,36 @@ interface SearchBoxResult<TItem> {
   displayText: string;
 }
 
-const SearchBox: React.FC<SearchBoxProps<any>> = ({
+const SearchBox = <TResultType,>({
   onSearch,
   onSelectItem,
+  isLoading,
   results,
-  placeholder = "Search...",
-}) => {
+  placeholder = 'Search...',
+}: SearchBoxProps<TResultType>)  => {
+  // contains the current search query
   const [query, setQuery] = useState("");
+  // contains the current loading state
   const [loading, setLoading] = useState(false);
+  // contains the current open state
   const [open, setOpen] = useState(false);
+  // ref to the search box
   const searchBoxRef = React.useRef<HTMLInputElement>(null);
+  // ref to the positioning imperative
   const positioningRef = React.useRef<PositioningImperativeRef>(null);
+  // ref to the first menu item
   const firstMenuItemRef = useRef<HTMLDivElement>(null);
+  /* 
+    * do not close menu as an outside click if clicking on the custom trigger/target
+    * this prevents it from closing & immediately re-opening when clicking custom triggers
+    * as per https://react.fluentui.dev/iframe.html?viewMode=docs&id=components-menu-menu--docs#anchor-to-custom-target
+  */
   const onOpenChange: MenuProps["onOpenChange"] = (e, data) => {
-    // do not close menu as an outside click if clicking on the custom trigger/target
-    // this prevents it from closing & immediately re-opening when clicking custom triggers
-    // as per 
-    if (data.type === "clickOutside" && e.target === searchBoxRef.current) {
-      return;
-    }
-
     setOpen(data.open);
   };
 
   React.useEffect(() => {
-    console.log("Setting target");
     if (searchBoxRef.current) {
-      console.log("Setting target");
       positioningRef.current?.setTarget(searchBoxRef.current);
     }
   }, [searchBoxRef, positioningRef]);
@@ -89,9 +92,9 @@ const SearchBox: React.FC<SearchBoxProps<any>> = ({
     [onSearch, query]
   );
 
-  const handleSelectItem = (item: SearchBoxResult<any>) => {
+  const handleSelectItem = (item: SearchBoxResult<TResultType>) => {
     onSelectItem(item.value);
-    setQuery(item.displayText);
+    setQuery("");
   };
 
   useEffect(() => {

@@ -1,48 +1,57 @@
-import React from 'react';
-import { Meta, StoryFn } from '@storybook/react';
-import { SearchBox, SearchBoxProps, SearchBoxResult } from './SearchBox'; // Adjust this path to where your SearchBox component is located
+import React from "react";
+import { Meta, StoryFn } from "@storybook/react";
+import { SearchBox, SearchBoxProps, SearchBoxResult } from "./SearchBox"; // Adjust this path to where your SearchBox component is located
+import { Card, CardHeader, Body1, Body2, Caption1 } from "@fluentui/react-components";
 
 export default {
-  title: 'Components/SearchBox',
+  title: "Components/SearchBox",
   component: SearchBox,
   argTypes: {
-    onSearch: { action: 'search performed' },
+    onSearch: { action: "search performed" },
   },
 } as Meta<typeof SearchBox>;
 
-export interface Company{
+export interface Company {
   name: string;
   assetCode: string;
 }
 
 const companies: Company[] = [
-  { name: 'Microsoft', assetCode: 'MSFT' },
-  { name: 'Apple', assetCode: 'AAPL' },
-  { name: 'Amazon', assetCode: 'AMZN' },
-  { name: 'Google', assetCode: 'GOOGL' },
-  { name: 'Facebook', assetCode: 'FB' },
+  { name: "Microsoft", assetCode: "MSFT" },
+  { name: "Apple", assetCode: "AAPL" },
+  { name: "Amazon Product Service (Europe) plc", assetCode: "AMZN" },
+  { name: "Google", assetCode: "GOOGL" },
+  { name: "Facebook", assetCode: "FB" },
 ];
 
-const Template: StoryFn<typeof SearchBox> = (args) => { 
-  const [searchResults, setSearchResults] = React.useState<SearchBoxResult<Company>[]>([]);
+const Template: StoryFn<typeof SearchBox> = (args) => {
+  const [searchResults, setSearchResults] = React.useState<
+    SearchBoxResult<Company>[]
+  >([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [selectedCompany, setSelectedCompany] = React.useState<Company | null>(
+    null
+  );
 
   const handleSearch = async (query: string, onComplete: () => void) => {
     setIsLoading(true);
     try {
       // Simulate an API call
-      const results = await new Promise<SearchBoxResult<Company>[]>((resolve) => {
-        setTimeout(() => {
-          resolve(companies
-            .map((company) => ({
-              value: company,
-              displayText: company.name,
-            })));
-        }, 1000);
-      });
+      const results = await new Promise<SearchBoxResult<Company>[]>(
+        (resolve) => {
+          setTimeout(() => {
+            resolve(
+              companies.map((company) => ({
+                value: company,
+                displayText: company.name,
+              }))
+            );
+          }, 2000);
+        }
+      );
       setSearchResults(results);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error("Search error:", error);
       setSearchResults([]);
     } finally {
       setIsLoading(false);
@@ -50,30 +59,43 @@ const Template: StoryFn<typeof SearchBox> = (args) => {
     }
   };
 
+  function handleSelectedItem(item: Company): void {
+    setSelectedCompany(item);
+  }
+
   return (
-    <SearchBox 
-      {...args} 
-      onSearch={handleSearch} 
-      onSelectItem={(item) => console.log('Selected item:', item)}
-      isLoading={isLoading} 
-      results={searchResults} 
-    />
+    <>
+      <SearchBox
+        {...args}
+        onSearch={handleSearch}
+        onSelectItem={handleSelectedItem}
+        isLoading={isLoading}
+        results={searchResults}
+      />
+      {selectedCompany && (
+          <CardHeader
+            header={<Body1>{selectedCompany.assetCode}</Body1>}
+            description={<Caption1>{selectedCompany.name}</Caption1>}
+          />
+      )}
+    </>
   );
 };
 
 export const Basic = Template.bind({});
 Basic.args = {
-  placeholder: 'Search for something...',
+  placeholder: "Search for something...",
 };
 
 export const WithPreloadedResults = Template.bind({});
 WithPreloadedResults.args = {
-  placeholder: 'Search with preloaded results',
+  placeholder: "Search with preloaded results",
 };
 WithPreloadedResults.parameters = {
   docs: {
     description: {
-      story: 'This story shows the SearchBox component with preloaded search results for demonstration purposes.',
+      story:
+        "This story shows the SearchBox component with preloaded search results for demonstration purposes.",
     },
   },
 };
