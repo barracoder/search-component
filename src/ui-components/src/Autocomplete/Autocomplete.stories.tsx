@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Option } from '@fluentui/react-components';
-import Autocomplete from './Autocomplete';
+import Autocomplete, {
+  AutocompleteOption,
+  AutocompleteProps,
+} from './Autocomplete';
 
-// Define the meta information for Storybook
+// Define the meta information for Storybook with generic type
 export default {
   title: 'Components/Autocomplete',
   component: Autocomplete,
@@ -32,16 +35,15 @@ export default {
 } as Meta<typeof Autocomplete>;
 
 // Company Autocomplete Story
-interface Company {
-  key: string;
+interface Company extends AutocompleteOption {
   name: string;
   stockSymbol: string;
   headquarters: string;
 }
 
-const CompanyAutocompleteTemplate: StoryFn<
-  typeof Autocomplete<Company>
-> = (args) => {
+const CompanyAutocompleteTemplate: StoryFn<AutocompleteProps<Company>> = (
+  args
+) => {
   const [options, setOptions] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -109,14 +111,13 @@ CompanyAutocomplete.args = {
 };
 
 // User Autocomplete Story
-interface User {
-  key: string;
+interface User extends AutocompleteOption {
   fullName: string;
   email: string;
   isActive: boolean;
 }
 
-const UserAutocompleteTemplate: StoryFn<typeof Autocomplete<User>> = (args) => {
+const UserAutocompleteTemplate: StoryFn<AutocompleteProps<User>> = (args) => {
   const [options, setOptions] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
 

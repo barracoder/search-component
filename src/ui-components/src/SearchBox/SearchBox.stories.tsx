@@ -1,6 +1,6 @@
 import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
-import { SearchBox, SearchBoxResult } from "./SearchBox"; // Adjust this path to where your SearchBox component is located
+import { SearchBox, SearchBoxResult } from "./SearchBox"; 
 import { CardHeader, Body1, Caption1 } from "@fluentui/react-components";
 
 export default {

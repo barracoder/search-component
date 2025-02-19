@@ -24,12 +24,12 @@ const useStyles = makeStyles({
 });
 
 // Type definitions
-interface AutocompleteOption {
+export interface AutocompleteOption {
   key: string;
   [key: string]: any;
 }
 
-interface AutocompleteProps<T extends AutocompleteOption>
+export interface AutocompleteProps<T extends AutocompleteOption>
   extends Partial<Omit<ComboboxProps, 'onChange' | 'options'>> {
   onDataFetch: (inputValue: string) => void;
   options: T[];
@@ -97,6 +97,15 @@ const Autocomplete = <T extends AutocompleteOption>({
     },
   };
 
+  const loadingSpinner = loading && (
+    <Spinner
+      size="tiny"
+      className={classes.spinner}
+      labelPosition="after"
+      label=""
+    />
+  );
+
   return (
     <div className={classes.root}>
       <Combobox
@@ -111,16 +120,10 @@ const Autocomplete = <T extends AutocompleteOption>({
       >
         {renderedOptions}
       </Combobox>
-      {loading && (
-        <Spinner
-          size="tiny"
-          className={classes.spinner}
-          labelPosition="after"
-          label=""
-        />
-      )}
+      {loadingSpinner}
     </div>
   );
 };
 
 export default Autocomplete;
+
